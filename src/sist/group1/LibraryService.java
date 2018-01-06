@@ -1,6 +1,5 @@
 package sist.group1;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.time.LocalDate;
@@ -8,26 +7,36 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class LibraryService {
-
+	
+	//도서 관리 DAO 객체 생성
 	private LibraryDAO dao = new LibraryDAO();
+	//관리자 정보, 현재 사용자 정보를 가진 Singleton 객체 생성
 	private Utils utils = Utils.getInstance();
 
+	//로그인 메소드 선언
+	//@Param 사용자 입력을 받기 위해 스캐너 받아오기
 	public void login(Scanner sc) {
+		//아이디, 비밀번호 입력 요청
 		System.out.println();
 		System.out.println("로그인을 진행합니다.");
 		System.out.print("아이디> ");
 		String userId = sc.next();
 		System.out.print("비밀번호> ");
 		String password = sc.next();
+		//관리자 id 및 비밀번호를 입력 했을 경우라면
 		if (userId.equals(utils.getAdmin()) && password.equals(utils.getAdmin())) {
 			System.out.println("관리자로 로그인 했습니다.");
+			//관리자 메뉴 보여주기
 			this.adminMenu(sc);
 		} else {
 			try {
+				//사용자 정보가 있는지 비교 후, 정의된 Exception 처리 (등록되지 않은 사용자 입니다. 다시 입력해주세요., 잘못된 비밀번호 입니다. 다시 입력해주세요.)
 				this.isWrongUser(userId, password);
+				//사용자 정보가 없지 않다면(!null)
 				if (this.dao.getCurrentUser(userId, password) != null) {
-					// 현재 사용자 설정
+					//현재 사용자 객체 정보 저장
 					utils.setCurrentUser(this.dao.getCurrentUser(userId, password));
+					//사용자 메뉴 보여주기
 					this.userMenu(sc);
 				}
 			} catch (Exception e) {
@@ -52,7 +61,6 @@ public class LibraryService {
 				/* 도서 관리 메뉴 메소드 호출 */
 				case 1:
 					this.adminMenuSub1(sc);
-					;
 					break;
 				/* 회원 관리 메뉴 메소드 호출 */
 				case 2:
@@ -201,7 +209,8 @@ public class LibraryService {
 
 	}
 
-	// 사용자 회원가입
+	//사용자 회원가입 메소드 선언
+	//@Param 사용자 입력을 받기 위해 스캐너 받아오기
 	public void register(Scanner sc) {
 		System.out.println();
 		System.out.println("회원가입을 진행합니다.");
@@ -212,6 +221,7 @@ public class LibraryService {
 		String password = sc.next();
 		while (true) {
 			try {
+				//비밀번호 패턴 예외처리
 				this.isPasswordPattern(password);
 				break;
 			} catch (Exception e) {
@@ -226,6 +236,7 @@ public class LibraryService {
 		String phone = sc.next();
 		while (true) {
 			try {
+				//전화번호 패턴 예외처리
 				this.isPhonePattern(phone);
 				break;
 			} catch (Exception e) {
@@ -234,9 +245,12 @@ public class LibraryService {
 				phone = sc.next();
 			}
 		}
+		//사용자 정보가 이미 존재하거나 관리자용 아이디를 입력한경우라면
 		if (this.dao.getCurrentUser(userId, password) != null || userId.equals(utils.getAdmin())) {
+			//회원 가입 불가
 			System.out.println("이미 존재하는 id 입니다. 다시 입력해주세요.");
 		} else {
+			//회원 가입 메소드 호출
 			this.dao.register(userId, password, name, phone);
 			System.out.println("회원 가입이 완료 되었습니다.\n");
 		}
@@ -252,19 +266,24 @@ public class LibraryService {
 		String publisher = sc.next();
 		System.out.print("저자> ");
 		String author = sc.next();
+		//도서 등록 메소드 호출
 		String bookNo = this.dao.registerBook(bookTitle, author, publisher);
+		//도서 등록 보여주기
 		System.out.printf("[%s/%s]이 등록되었습니다.%n", bookNo, bookTitle);
 	}
 
-	// 프로그램 종료시 users, books, checkOuts 데이터 저장
+	// 프로그램 종료시 users, books, checkOuts 데이터 저장용 메소드 선언
 	public void fileSave() {
+		//프로그램 종료 메세지 보여주기
 		System.out.println();
 		System.out.println("<<<쌍용 도서관>>> 프로그램을 종료합니다..");
+		//파일 저장 메소드 호출
 		this.dao.logout();
 	}
 
 	/* 회원 가입시 예외처리 */
 	private void isPhonePattern(String password) throws PatternException {
+		//전화번호 패턴 (010-1234-5678)
 		String temp = "(\\d{3}).*(\\d{3}).*(\\d{4})";
 		Boolean bool = Pattern.matches(temp, password);
 		if (!bool) {
@@ -273,6 +292,7 @@ public class LibraryService {
 	}
 
 	private void isPasswordPattern(String phone) throws PatternException {
+		//비밀번호 패턴 (영문 소문자 + 숫자 혼용 8글자~15글자)  
 		String temp = "(?=.*\\d)(?=.*[a-z]).{8,15}";
 		Boolean bool = Pattern.matches(temp, phone);
 		if (!bool) {
@@ -281,11 +301,12 @@ public class LibraryService {
 	}
 
 	private void isWrongUser(String userId, String password) throws ExistUserException {
+		//사용자 입력 정보가 없거나 관리자 정보가 아닐 경우라면
 		if (this.dao.getCurrentUser(userId, password) == null && !userId.equals(utils.getAdmin())) {
 			throw new ExistUserException("등록되지 않은 사용자 입니다. 다시 입력해주세요.\n");
 		}
 		if (this.dao.isWrongPassword(userId, password)) {
-			throw new ExistUserException("잘못된 비밀번호 입니다. 다시 입력해주세요.");
+			throw new ExistUserException("잘못된 비밀번호 입니다. 다시 입력해주세요.\n");
 		}
 	}
 
@@ -324,10 +345,6 @@ public class LibraryService {
 			switch (selectNum) {
 			case 1:
 				this.searchForBooks("등록번호", sc);
-				/*
-				 * System.out.print("등록번호> "); key = sc.next();
-				 * System.out.println(this.dao.searchForBooks("등록번호", key));
-				 */
 				break;
 			case 2:
 				this.searchForBooks("도서명", sc);
@@ -436,6 +453,7 @@ public class LibraryService {
 		// 검색 진행
 		// -> 매개변수 목록에 key, value를 같이 보낸다.
 		System.out.println(this.dao.searchForBooks(key, value));
+		this.viewBookInDetail(sc);
 	}
 
 	// 도서를 삭제
@@ -468,21 +486,17 @@ public class LibraryService {
 	private void viewBookInDetail(Scanner sc) {
 		// while문 돌릴때 키값 받는 변수
 		// while문 돌릴떄 쓰는 변수
-		boolean run = false;
+		boolean run = true;
 		while (run) {
+	
 			System.out.println();
 			System.out.println("1.도서 상세 보기   0.나가기");
 			System.out.print("선택> ");
-
 			int selectNo = sc.nextInt();
 			sc.nextLine();
-
 			switch (selectNo) {
-			case 1:
-				this.viewBookInDetailSub(sc);
-				break;
-			case 0:
-				run = false;
+			case 1:this.viewBookInDetailSub(sc);break;
+			case 0:run = false;
 			}
 		}
 	}
@@ -696,6 +710,7 @@ public class LibraryService {
 		}
 	}
 
+	//날짜 형식 예외 처리
 	private boolean dueDateExceptionCheck(String dueDate) {
 		boolean isOK = false;
 		try {

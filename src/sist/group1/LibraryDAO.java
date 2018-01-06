@@ -29,126 +29,143 @@ public class LibraryDAO {
 
 	private Utils utils = Utils.getInstance();
 	// private User currentUser = this.utils.getCurrentUser()();
+	
+	//사용자 정보, 도서 정보, 도서 대출 정보를 저장할 컬렉션 선언
 	private Map<String, User> users = new HashMap<String, User>();
 	private Map<String, Book> books = new HashMap<String, Book>();
 	private List<CheckOut> checkOuts = new ArrayList<CheckOut>();
 
-	private static final String USER_FILE = "D:\\users.data";
-	private static final String BOOK_FILE = "D:\\books.data";
-	private static final String CHECKOUT_FILE = "D:\\checkOuts.data";
+	//프로그램 종료시 D드라이브에서 파일 저장 및 실행시 파일 불러오기 위한 경로 지정
+	private static final String USER_FILE = "D:\\users.data"; //사용자 정보를 저장할 파일 경로 및 파일 이름
+	private static final String BOOK_FILE = "D:\\books.data"; //도서 정보를 저장할 파일 경로 및 파일 이름
+	private static final String CHECKOUT_FILE = "D:\\checkOuts.data"; //도서 대출 정보를 저장할 파일 경로 및 파일 이름
 
 	private LocalDate now = LocalDate.now();
 	private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	private String nowDate = this.now.format(dateFormat);
 
-	@SuppressWarnings("unchecked")
+	//파일 불러오기를 위한 메소드 선언
+	@SuppressWarnings("unchecked") //obj 캐스팅 컴파일 경고를 사용하지 않도록 설정
 	public LibraryDAO() {
+		/*사용자, 도서, 대출 정보 파일 객체 생성*/
 		File file = new File(USER_FILE);
 		File file1 = new File(BOOK_FILE);
 		File file2 = new File(CHECKOUT_FILE);
 		Object obj = null;
-
+		//사용자 정보 파일이 존재 할 경우라면
 		if (file.exists()) {
+			//역직렬화 해서 파일 가져오기
 			obj = deSerialization(USER_FILE);
+			//역직렬화한 파일을 사용자 정보를 저장한 저장소에 할당
 			this.users = (Map<String, User>) obj;
 		}
+		//도서 정보 파일이 존재 할 경우라면
 		if (file1.exists()) {
+			//역직렬화 해서 파일 가져오기
 			obj = deSerialization(BOOK_FILE);
+			//역직렬화한 파일을 사용자 정보를 저장한 저장소에 할당
 			this.books = (Map<String, Book>) obj;
 		}
+		//대출 정보 파일이 존재 할 경우라면
 		if (file2.exists()) {
+			//역직렬화 해서 파일 가져오기
 			obj = deSerialization(CHECKOUT_FILE);
+			//역직렬화한 파일을 사용자 정보를 저장한 저장소에 할당
 			this.checkOuts = (List<CheckOut>) obj;
 		}
-		/*
-		 * 값 출력 테스트
-		 */
-		/*
-		 * StringBuilder sb = new StringBuilder(); Set<String>keySet =
-		 * this.users.keySet(); List<String>temp = new ArrayList<String>(keySet);
-		 * Iterator<String>it = temp.iterator(); while(it.hasNext()) { String key =
-		 * it.next(); sb.append(String.format("%s%n",this.users.get(key))); }
-		 * System.out.println(sb.toString());
-		 */
-		/*
-		 * this.users = TestClass.testUser; this.books = TestClass.testBook;
-		 */
 	}
 
 	/*
-	 * -회원가입이 완료 되었습니다. -이미 존재하는 id 입니다. 다시 입력해주세요. -잘못된 비밀번호 형식입니다. 다시 입력해주세요. -잘못된
-	 * 전화번호 형식입니다. 다시 입력해주세요.
+	 * -회원가입이 완료 되었습니다. 
+	 * -이미 존재하는 id 입니다. 다시 입력해주세요. 
+	 * -잘못된 비밀번호 형식입니다. 다시 입력해주세요. 
+	 * -잘못된 전화번호 형식입니다. 다시 입력해주세요.
 	 */
 
-	// 사용자 등록
+	//회원가입을 통한 사용자 등록 메소드 선언
+	//@Param 사용자 아이디, 비밀번호, 이름, 전화번호
 	public void register(String userId, String password, String name, String phone) {
+		//User 타입의 임시 변수 선언
 		User user = null;
+		//사용자 고유번호 String 변수 선언 (자동생성)
 		String userNo = "U001";
-
+		//이미 등록된 사용자가 있다면	
 		if (this.users.size() > 0) {
 			Set<String> key = this.users.keySet();
 			List<String> temp = new ArrayList<String>(key);
-
+			//사용자 등록번호(키)를 기준으로 오름차순 정렬 (맵 타입의 변수는 값이 정렬되어 있지 않기 때문에 바로 값을 뽑아올 수 없다.)
 			Collections.sort(temp, new Comparator<String>() {
 				@Override
 				public int compare(String s1, String s2) {
 					return s1.compareTo(s2);
 				}
 			});
-			String tempKey = temp.get(temp.size() - 1);
+			//고유 번호를 기준으로 가장 마지막 사용자를 가져오기 위한 키 임시 변수 선언
+			String tempKey = temp.get(temp.size() - 1); 
+			//가장 마지막 사용자 객체 가져오기
 			user = this.users.get(tempKey);
+			//가장 마지막 등록번호를 가진 사용자 고유번호(키)+1한 값을 고유번호 변수에 할당
 			userNo = String.format("U%03d", Integer.parseInt(user.getUserNo().substring(1)) + 1);
 		}
-
+		//사용자 객체 생성
 		User u = new User(userNo, userId, password, name, phone);
+		//사용자 고유번호(키), 사용자 객체를 사용자 저장소에 저장
 		this.users.put(userNo, u);
 	}
 
-	// 도서 등록
+	//관리자의 도서 등록 메소드 선언
+	//@Param 도서명, 저자, 출판사
 	public String registerBook(String bookTitle, String author, String publisher) {
+		//Book 타입의 임시 변수 선언
 		Book book = null;
+		//도서 고유번호 String 변수 선언 (자동생성)
 		String bookNo = "B001";
 		if (this.books.size() > 0) {
 			Set<String> key = this.books.keySet();
 			List<String> temp = new ArrayList<String>(key);
+			//도서 등록번호(키)를 기준으로 오름차순 정렬 (맵 타입의 변수는 값이 정렬되어 있지 않기 때문에 바로 값을 뽑아올 수 없다.)
 			Collections.sort(temp, new Comparator<String>() {
 				@Override
 				public int compare(String s1, String s2) {
 					return s1.compareTo(s2);
 				}
 			});
+			//도서 번호를 기준으로 가장 마지막 도서를 가져오기 위한 키 임시 변수 선언
 			String tempKey = temp.get(temp.size() - 1);
+			//가장 마지막 도서 객체 가져오기
 			book = this.books.get(tempKey);
+			//가장 마지막 등록번호를 가진 도서 고유번호(키)+1한 값을 고유번호 변수에 할당
 			bookNo = String.format("B%03d", Integer.parseInt(book.getBookNo().substring(1)) + 1);
 		}
+		//도서 고유번호(키), 도서 객체를 사용자 저장소에 저장
 		this.books.put(bookNo, new Book(bookNo, bookTitle, author, publisher));
+		//도서 고유번호(키)반환 (사용자에게 보여주기 위해)
 		return bookNo;
 	}
 
-	/*
-	 * @Param 사용자 아이디, 사용자 비밀번호 범용적으로 사용 가능한 메소드. (현재 사용자 설정용, 사용자 존재 여부)
-	 */
+	//사용자 객체 저장소에 존재 여부 확인용 메소드 선언
+	//@Param 사용자 아이디, 사용자 비밀번호 범용적으로 사용 가능한 메소드. (현재 사용자 설정용, 사용자 존재 여부)
 	public User getCurrentUser(String userId, String password) {
-		// 결과 값으로 넘길 User 타입 변수 생성
+		//결과 값으로 넘길 User 타입 변수 생성
 		User user = null;
-		// 전체 users의 반복문을 돌리며, 탐색하기 위해 set, list 생성
+		//전체 users의 반복문을 돌리며, 탐색하기 위해 set, list 생성
 		Set<String> key = this.users.keySet();
 		List<String> temp = new ArrayList<String>(key);
-		// Iterator로 반복문 돌리기
+		//Iterator로 반복문 돌리기
 		Iterator<String> it = temp.iterator();
 		while (it.hasNext()) {
 			String keyTemp = (String) it.next();
-			// User 타입의 임시 변수 선언 후 users 맵 객체의 값 할당
+			//User 타입의 임시 변수 선언 후 users 맵 객체의 값 할당
 			User u = this.users.get(keyTemp);
-			// 매개변수로 입력받은 사용자 아이디 및 비밀번호가 일치하는 값이 있다면
+			//매개변수로 입력받은 사용자 아이디 및 비밀번호가 일치하는 값이 있다면
 			if (u.getUserId().equals(userId) && u.getPassword().equals(password)) {
-				// 결과 값을 리턴할 유저 변수에 할당
+				//결과 값을 리턴할 유저 변수에 할당
 				user = u;
-				// 결과 값을 찾았으므로, 더 이상 반복문을 돌릴 필요가 없다. break;
+				//결과 값을 찾았으므로, 더 이상 반복문을 돌릴 필요가 없다. break;
 				break;
 			}
 		}
-		// 결과 값 리턴 -> 결과 값이 null이라면, 사용자가 없다는 뜻이다. 가져다 쓸 때 널 체크 필수!
+		//결과 값 리턴 -> 결과 값이 null이라면, 사용자가 없다는 뜻이다. 가져다 쓸 때 널 체크 필수!
 		return user;
 	}
 
@@ -176,52 +193,72 @@ public class LibraryDAO {
 	/*
 	 * @Param 파일이름 파일 역직렬화 프로그램 실행시 users, books, checkouts 초기화를 위한 메소드
 	 */
+	//파일 저장용 메소드 선언
+	//@Param 파일 이름이 포함된 경로(USER_FILE, BOOK_FILE, CHECKOUT_FILE)
 	public Object deSerialization(String fileName) {
+		//역직렬화한 객체를 반환하기 위한 Object 변수 선언
 		Object result = null;
+		//파일을 스트림으로 읽어오기 위한 변수 선언
 		FileInputStream fs = null;
+		//파일로부터 읽어온 스트림을 원래 필드 형으로 가져오기 위한 변수 선언
 		ObjectInputStream os = null;
 		try {
+			//파일 읽어오기
 			fs = new FileInputStream(fileName);
+			//읽어온 파일로부터 객체 데이터를 읽어오기
 			os = new ObjectInputStream(fs);
+			//객체 읽기
 			result = os.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		} finally {
 			try {
+				//스트림을 닫아주기
 				os.close();
 				fs.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		//읽어온 객체 리턴
 		return result;
 	}
 
-	// 프로그램 종료시 users, books, checkOuts 데이터 저장
+	//프로그램 종료시 users, books, checkOuts를 파일로 저장을 위한 메소드 선언
 	public void logout() {
+		//직렬화를 위한 스트림 생성
 		FileOutputStream fs = null;
 		ObjectOutputStream os = null;
 		try {
+			//사용자 객체가 저장된 컬렉션의 크기가 0보다 크다면
 			if (this.users.size() > 0) {
+				//D:\\users.data 파일의 스트림 객체 생성
 				fs = new FileOutputStream(USER_FILE);
 				os = new ObjectOutputStream(fs);
+				// 컬렉션 저장소에 저장된 모든 정보를 직렬화 시도
 				os.writeObject(this.users);
 			}
+			//도서 객체가 저장된 컬렉션의 크기가 0보다 크다면
 			if (this.books.size() > 0) {
+				//D:\\books.data 파일의 스트림 객체 생성
 				fs = new FileOutputStream(BOOK_FILE);
 				os = new ObjectOutputStream(fs);
+				// 컬렉션 저장소에 저장된 모든 정보를 직렬화 시도
 				os.writeObject(this.books);
 			}
+			//도서 대출 정보 객체가 저장된 HashMap의 크기가 0보다 크다면
 			if (this.checkOuts.size() > 0) {
+				//D:\\checkOuts.data 파일의 스트림 생성
 				fs = new FileOutputStream(CHECKOUT_FILE);
 				os = new ObjectOutputStream(fs);
+				// 컬렉션 저장소에 저장된 모든 정보를 직렬화 시도
 				os.writeObject(this.checkOuts);
 			}
-			// 컬렉션 저장소에 저장된 모든 정보를 직렬화 시도
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
 			try {
+				//스트림 닫아주기
 				os.close();
 				fs.close();
 			} catch (IOException e) {
@@ -230,12 +267,18 @@ public class LibraryDAO {
 		}
 	}
 
-	// 도서 삭제
+	//기존 도서 삭제용 메소드 선언
+	//@Param 도서 고유번호(키)를 받아와서 해당 객체 삭제  
 	public String deleteBook(String bookNo) {
+		//삭제 된 도서의 정보를 반환하기 위한 StringBuilder객체 생성
 		StringBuilder sb = new StringBuilder();
+		//삭제할 도서를 가져올 객체 생성
 		Book b = this.books.get(bookNo);
+		//삭제할 도서의 정보를 append
 		sb.append(String.format("[%s/%s]가 삭제되었습니다.%n", b.getBookNo(), b.getBookTitle()));
+		//키를 통해 해당 객체 삭제
 		this.books.remove(bookNo);
+		//삭제한 도서 정보 반환
 		return sb.toString();
 	}
 
@@ -475,7 +518,7 @@ public class LibraryDAO {
 
 		sb.append(String.format("[%s/ %s/ %s/ &s]%n", book.getBookNo(), book.getBookTitle(), book.getPublisher(),
 				book.getAuthor()));
-		sb.append(String.format("오늘 날짜 : %s", this.getToday()));
+		sb.append(String.format("오늘 날짜 : %s%n", this.getToday()));
 		sb.append(String.format("--------------------------------------------------------------%n"));
 		sb.append(String.format("회차/대출일/반납일/반납예정일/연체일수/대출인/회원번호%n"));
 		sb.append(String.format("--------------------------------------------------------------%n"));
@@ -787,23 +830,33 @@ public class LibraryDAO {
 		}
 	}
 
-	// 현재 사용자의 대출 가능한지 구하기(가능<3)
+	// 현재 사용자의 대출 가능한지 구하기(3권 초과 불과)
 	public int isCheckOutAble() {
+		//결과를 반환할 변수 선언
 		int result = 0;
+		//도서 대출 정보가 들어있는 컬렉션에서 반복
 		for (CheckOut c : this.checkOuts) {
+			//반납되지 않았으면서(null)->이전 대출 이력을 반환하지 않기 위해 필요, 대출 중인 책이 현재 사용자의 고유번호와 같다면   
 			if (c.getReturnDate() == null && c.getUserNo().equals(utils.getCurrentUser().getUserNo())) {
+				//도서를 대출 중이므로 대출 중인 수량 1씩 더해주기
 				++result;
 			}
 		}
+		//대출 중인 수량 결과값 반환
 		return result;
 	}
 
 	// 현재 책이 비치중인지 구하기
+	//@Param 도서의 고유번호를 받아와서 결과값 반환
 	public boolean isCheckOutAble2(String bookNo) {
+		//책이 비치중인지 반환할 변수 선언
 		boolean result = false;
+		//해당 도서의 상태가 비치중이라면
 		if (this.books.get(bookNo).getBookStatus().equals("비치중")) {
+			//대출 가능하므로 결과값에 true 할당 
 			result = true;
 		}
+		//대출 가능 여부 결과값 반환
 		return result;
 	}
 }
