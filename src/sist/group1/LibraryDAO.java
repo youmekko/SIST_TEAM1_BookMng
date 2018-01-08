@@ -343,10 +343,10 @@ public class LibraryDAO {
 
 		StringBuilder sb = new StringBuilder();
 		// 임시 카운트 변수
+		int a = 0;
+		// 퍼센트 계산용 books 사이즈 변수
+		double d = this.books.size();
 		if (this.checkOuts.size() != 0) {
-			int a = 0;
-			// 퍼센트 계산용 books 사이즈 변수
-			double d = this.books.size();
 			// 오늘날짜 출력
 			sb.append(String.format("오늘 날짜 : %s%n", this.nowDate));
 			sb.append(String.format("-------------------------------------------------------------%n"));
@@ -367,12 +367,14 @@ public class LibraryDAO {
 			sb.append(String.format("-------------------------------------------------------------%n"));
 
 			// 퍼센트 단위 바꿔주는 변수
-			double e = (a / d) * 100.0;
+			
 			// 강제 형변환
-
-			sb.insert(0, String.format("%n도서관내 [%d%%] 책이 대출중 입니다.%n", (int) e));
-		} else {
+		}
+		if(a<=0) {
 			sb.append("대출 중인 책이 없습니다.");
+		}else {
+			double e = (a / d) * 100.0;
+			sb.insert(0, String.format("%n도서관내 [%d%%] 책이 대출중 입니다.%n", (int) e));
 		}
 		return sb.toString();
 

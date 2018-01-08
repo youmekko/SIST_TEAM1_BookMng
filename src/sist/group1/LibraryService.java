@@ -284,7 +284,7 @@ public class LibraryService {
 	/* 회원 가입시 예외처리 */
 	private void isPhonePattern(String password) throws PatternException {
 		//전화번호 패턴 (010-1234-5678)
-		String temp = "(\\d{3}).*(\\d{3}).*(\\d{4})";
+		String temp = "(\\d{3}).*(\\d{4}).*(\\d{4})";
 		Boolean bool = Pattern.matches(temp, password);
 		if (!bool) {
 			throw new PatternException("잘못된 전화번호 형식 입니다. 다시 입력해주세요.");
@@ -642,18 +642,12 @@ public class LibraryService {
 			System.out.println();
 			System.out.println("1.회원 상세 보기   0.나가기");
 			System.out.print("선택> ");
-
 			int selectNo = sc.nextInt();
 			sc.nextLine();
-
 			switch (selectNo) {
 			// 상세보기 호출
-			case 1:
-				this.viewUserInDetailSub(sc);
-				break;
-			case 0:
-				run = false;
-				break;
+			case 1:this.viewUserInDetailSub(sc);break;
+			case 0:run = false;break;
 			}
 		}
 	}
