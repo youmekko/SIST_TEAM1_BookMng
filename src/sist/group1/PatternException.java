@@ -6,7 +6,7 @@ public class PatternException extends Exception {
 		super();
 	}
 
-	public PatternException(String arg0) {
-		super(arg0);
+	public PatternException(String message) {
+		super(message);
 	}
 }

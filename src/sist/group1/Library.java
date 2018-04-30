@@ -11,10 +11,20 @@ public class Library {
 		try {
 			while (true) {
 				System.out.println();
-				System.out.println("<<<쌍용 도서관>>>>");
-				System.out.println("로그인이 필요합니다. 회원가입 또는 로그인을 진행 해주세요.\n");
+				System.out.println(
+						"=======================================================================================");
+				System.out.println("　　　　　　　　　　　　　　　　　　쌍용 도서관");
+				System.out.println(
+						"=======================================================================================");
+				System.out.println("**************로그인이 필요합니다. 회원가입 또는 로그인을 진행 해주세요.**************");
+				System.out.println();
+
+				System.out.println(
+						"=======================================================================================");
 				System.out.println("1.회원가입   2.로그인   0.종료");
-				System.out.print("선택> ");
+				System.out.println(
+						"=======================================================================================");
+				System.out.print("선택 > ");
 				int input = sc.nextInt();
 				sc.nextLine();
 				if (input == 0)

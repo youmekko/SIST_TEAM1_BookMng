@@ -7,36 +7,39 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public class LibraryService {
-	
-	//도서 관리 DAO 객체 생성
+
+	// 도서 관리 DAO 객체 생성
 	private LibraryDAO dao = new LibraryDAO();
-	//관리자 정보, 현재 사용자 정보를 가진 Singleton 객체 생성
+	// 관리자 정보, 현재 사용자 정보를 가진 Singleton 객체 생성
 	private Utils utils = Utils.getInstance();
 
-	//로그인 메소드 선언
-	//@Param 사용자 입력을 받기 위해 스캐너 받아오기
+	// 로그인 메소드 선언
+	// @Param 사용자 입력을 받기 위해 스캐너 받아오기
 	public void login(Scanner sc) {
-		//아이디, 비밀번호 입력 요청
+		// 아이디, 비밀번호 입력 요청
 		System.out.println();
 		System.out.println("로그인을 진행합니다.");
-		System.out.print("아이디> ");
-		String userId = sc.next();
-		System.out.print("비밀번호> ");
-		String password = sc.next();
-		//관리자 id 및 비밀번호를 입력 했을 경우라면
+		System.out.println();
+		System.out.print("아이디 > ");
+		String userId = sc.nextLine();
+		System.out.print("비밀번호 > ");
+		String password = sc.nextLine();
+		// 관리자 id 및 비밀번호를 입력 했을 경우라면
 		if (userId.equals(utils.getAdmin()) && password.equals(utils.getAdmin())) {
-			System.out.println("관리자로 로그인 했습니다.");
-			//관리자 메뉴 보여주기
+			System.out.println();
+			System.out.println("[관리자]로 로그인 했습니다.");
+			// 관리자 메뉴 보여주기
 			this.adminMenu(sc);
 		} else {
 			try {
-				//사용자 정보가 있는지 비교 후, 정의된 Exception 처리 (등록되지 않은 사용자 입니다. 다시 입력해주세요., 잘못된 비밀번호 입니다. 다시 입력해주세요.)
+				// 사용자 정보가 있는지 비교 후, 정의된 Exception 처리 (등록되지 않은 사용자 입니다. 다시 입력해주세요., 잘못된 비밀번호
+				// 입니다. 다시 입력해주세요.)
 				this.isWrongUser(userId, password);
-				//사용자 정보가 없지 않다면(!null)
+				// 사용자 정보가 없지 않다면(!null)
 				if (this.dao.getCurrentUser(userId, password) != null) {
-					//현재 사용자 객체 정보 저장
+					// 현재 사용자 객체 정보 저장
 					utils.setCurrentUser(this.dao.getCurrentUser(userId, password));
-					//사용자 메뉴 보여주기
+					// 사용자 메뉴 보여주기
 					this.userMenu(sc);
 				}
 			} catch (Exception e) {
@@ -51,8 +54,12 @@ public class LibraryService {
 		while (true) {
 			try {
 				System.out.println();
-				System.out.println("1.도서 관리   2.회원 관리   0.로그 아웃");
-				System.out.print("선택> ");
+				System.out.println(
+						"=======================================================================================");
+				System.out.println("1.도서 관리   2.회원 관리   0.로그아웃");
+				System.out.println(
+						"=======================================================================================");
+				System.out.print("선택 > ");
 				input = sc.nextInt();
 				sc.nextLine();
 				if (input == 0)
@@ -81,8 +88,12 @@ public class LibraryService {
 	private void adminMenuSub1(Scanner sc) {
 		while (true) {
 			System.out.println();
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.전체 도서   2.도서 검색   3.대출중 도서   4.연체중 도서   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 			int input = sc.nextInt();
 			sc.nextLine();
 			if (input == 0)
@@ -122,8 +133,10 @@ public class LibraryService {
 	private void adminSearchSub(Scanner sc) {
 
 		System.out.println();
+		System.out.println("=======================================================================================");
 		System.out.println("1.도서 등록   2.도서 삭제   0.나가기");
-		System.out.print("선택> ");
+		System.out.println("=======================================================================================");
+		System.out.print("선택 > ");
 		int input = sc.nextInt();
 		sc.nextLine();
 		switch (input) {
@@ -142,8 +155,12 @@ public class LibraryService {
 	private void adminMenuSub2(Scanner sc) {
 		while (true) {
 			System.out.println();
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.전체 회원   2.회원 검색  0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 			int input = sc.nextInt();
 			sc.nextLine();
 			if (input == 0)
@@ -173,9 +190,14 @@ public class LibraryService {
 
 			try {
 				System.out.println();
+				System.out.println(
+						"=======================================================================================");
 				System.out.println("1.도서 검색   2.대출 목록   3.반납 목록   4.메시지 확인   0.로그아웃");
-				System.out.print("선택> ");
+				System.out.println(
+						"=======================================================================================");
+				System.out.print("선택 > ");
 				int input = sc.nextInt();
+				sc.nextLine();
 				if (input == 0)
 					break;
 				switch (input) {
@@ -193,6 +215,7 @@ public class LibraryService {
 					break;
 				/* 메세지 확인 sub메뉴 */
 				case 4:
+					System.out.println(this.dao.viewAllMessages());
 					this.viewAllMessages(sc);
 					break;
 				default:
@@ -209,50 +232,54 @@ public class LibraryService {
 
 	}
 
-	//사용자 회원가입 메소드 선언
-	//@Param 사용자 입력을 받기 위해 스캐너 받아오기
+	// 사용자 회원가입 메소드 선언
+	// @Param 사용자 입력을 받기 위해 스캐너 받아오기
 	public void register(Scanner sc) {
 		System.out.println();
 		System.out.println("회원가입을 진행합니다.");
 
-		System.out.print("아이디> ");
-		String userId = sc.next();
-		System.out.print("비밀번호(영문+숫자 조합 8자 이상)> ");
-		String password = sc.next();
+		System.out.println();
+		System.out.print("아이디 > ");
+		String userId = sc.nextLine();
+		System.out.print("비밀번호(영문+숫자 조합 8자 이상) > ");
+		String password = sc.nextLine();
 		while (true) {
 			try {
-				//비밀번호 패턴 예외처리
+				// 비밀번호 패턴 예외처리
 				this.isPasswordPattern(password);
 				break;
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
-				System.out.print("비밀번호(영문+숫자 조합 8자 이상)> ");
-				password = sc.next();
+				System.out.print("비밀번호(영문+숫자 조합 8자 이상) > ");
+				password = sc.nextLine();
 			}
 		}
-		System.out.print("이름> ");
-		String name = sc.next();
-		System.out.print("전화번호(010-1234-5678)> ");
-		String phone = sc.next();
+		System.out.print("이름 > ");
+		String name = sc.nextLine();
+		System.out.print("전화번호(010-1234-5678) > ");
+		String phone = sc.nextLine();
 		while (true) {
 			try {
-				//전화번호 패턴 예외처리
+				// 전화번호 패턴 예외처리
 				this.isPhonePattern(phone);
 				break;
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
-				System.out.print("전화번호(010-1234-5678)> ");
-				phone = sc.next();
+				System.out.print("잘못된 전화번호 형식입니다. 다시 입력해주세요.");
+				System.out.println("전화번호(010-1234-5678) > ");
+				phone = sc.nextLine();
 			}
 		}
-		//사용자 정보가 이미 존재하거나 관리자용 아이디를 입력한경우라면
+		// 사용자 정보가 이미 존재하거나 관리자용 아이디를 입력한경우라면
 		if (this.dao.getCurrentUser(userId, password) != null || userId.equals(utils.getAdmin())) {
-			//회원 가입 불가
+			// 회원 가입 불가
+			System.out.println();
 			System.out.println("이미 존재하는 id 입니다. 다시 입력해주세요.");
 		} else {
-			//회원 가입 메소드 호출
+			// 회원 가입 메소드 호출
 			this.dao.register(userId, password, name, phone);
-			System.out.println("회원 가입이 완료 되었습니다.\n");
+			System.out.println();
+			System.out.println("회원 가입이 완료 되었습니다.");
 		}
 	}
 
@@ -260,53 +287,56 @@ public class LibraryService {
 	private void registerBook(Scanner sc) {
 		System.out.println();
 		System.out.println("등록할 도서를 입력해주세요.");
+		System.out.println();
 		System.out.print("도서명> ");
-		String bookTitle = sc.next();
+		String bookTitle = sc.nextLine();
 		System.out.print("출판사> ");
-		String publisher = sc.next();
+		String publisher = sc.nextLine();
 		System.out.print("저자> ");
-		String author = sc.next();
-		//도서 등록 메소드 호출
+		String author = sc.nextLine();
+		// 도서 등록 메소드 호출
 		String bookNo = this.dao.registerBook(bookTitle, author, publisher);
-		//도서 등록 보여주기
-		System.out.printf("[%s/%s]이 등록되었습니다.%n", bookNo, bookTitle);
+		// 도서 등록 보여주기
+		System.out.printf("[%s/%s]이 등록 되었습니다.%n", bookNo, bookTitle);
 	}
 
 	// 프로그램 종료시 users, books, checkOuts 데이터 저장용 메소드 선언
 	public void fileSave() {
-		//프로그램 종료 메세지 보여주기
+		// 프로그램 종료 메세지 보여주기
 		System.out.println();
-		System.out.println("<<<쌍용 도서관>>> 프로그램을 종료합니다..");
-		//파일 저장 메소드 호출
+		System.out.println("[쌍용 도서관] 프로그램을 종료합니다! BYE~*");
+		// 파일 저장 메소드 호출
 		this.dao.logout();
 	}
 
-	/* 회원 가입시 예외처리 */
+	/* 회원 가입시 전화번호 예외처리 */
 	private void isPhonePattern(String password) throws PatternException {
-		//전화번호 패턴 (010-1234-5678)
+		// 전화번호 패턴 (010-1234-5678)
 		String temp = "(\\d{3}).*(\\d{4}).*(\\d{4})";
 		Boolean bool = Pattern.matches(temp, password);
 		if (!bool) {
-			throw new PatternException("잘못된 전화번호 형식 입니다. 다시 입력해주세요.");
+			throw new PatternException("잘못된 전화번호 형식 입니다. 다시 입력해주세요.\n");
 		}
 	}
 
+	/* 회원 가입시 비밀번호 예외처리 */
 	private void isPasswordPattern(String phone) throws PatternException {
-		//비밀번호 패턴 (영문 소문자 + 숫자 혼용 8글자~15글자)  
+		// 비밀번호 패턴 (영문 소문자 + 숫자 혼용 8글자~15글자)
 		String temp = "(?=.*\\d)(?=.*[a-z]).{8,15}";
 		Boolean bool = Pattern.matches(temp, phone);
 		if (!bool) {
-			throw new PatternException("잘못된 비밀번호 형식 입니다. 다시 입력해주세요.");
+			throw new PatternException("잘못된 비밀번호 형식 입니다. 다시 입력해주세요.\n");
+
 		}
 	}
 
 	private void isWrongUser(String userId, String password) throws ExistUserException {
-		//사용자 입력 정보가 없거나 관리자 정보가 아닐 경우라면
+		// 사용자 입력 정보가 없거나 관리자 정보가 아닐 경우라면
 		if (this.dao.getCurrentUser(userId, password) == null && !userId.equals(utils.getAdmin())) {
-			throw new ExistUserException("등록되지 않은 사용자 입니다. 다시 입력해주세요.\n");
+			throw new ExistUserException("등록되지 않은 사용자 입니다. 다시 입력해주세요.");
 		}
 		if (this.dao.isWrongPassword(userId, password)) {
-			throw new ExistUserException("잘못된 비밀번호 입니다. 다시 입력해주세요.\n");
+			throw new ExistUserException("잘못된 비밀번호 입니다. 다시 입력해주세요.");
 		}
 	}
 
@@ -314,8 +344,12 @@ public class LibraryService {
 	private void overdueSub(Scanner sc) {
 		while (true) {
 			System.out.println();
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.메세지 전송   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 			int input = sc.nextInt();
 			sc.nextLine();
 			if (input == 0) {
@@ -323,9 +357,10 @@ public class LibraryService {
 			} else if (input == 1) {
 				System.out.println();
 				System.out.println("연체중인 회원들에게 메세지를 전송합니다.");
-				System.out.print("메세지 입력> ");
+				System.out.print("메세지 입력 > ");
 				String message = sc.nextLine();
 				this.dao.sendMessages(message);
+				System.out.println();
 				System.out.println("메세지가 전송 되었습니다.");
 			}
 		}
@@ -336,8 +371,12 @@ public class LibraryService {
 		boolean run = true;
 		while (run) {
 			System.out.println();
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.등록번호 검색   2.도서명 검색   3.출판사 검색   4.저자 검색   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 
 			int selectNum = sc.nextInt();
 			sc.nextLine();
@@ -368,8 +407,9 @@ public class LibraryService {
 	private void checkOutBook(Scanner sc) {
 		System.out.println();
 		System.out.println("대출할 책의 등록번호을 입력해 주세요.");
+		System.out.println();
 		System.out.print("등록번호 입력> ");
-		String bookNo = sc.next();
+		String bookNo = sc.nextLine();
 		try {
 			this.isExistBook(bookNo);
 			if (this.dao.isCheckOutAble() >= 3) {
@@ -388,8 +428,10 @@ public class LibraryService {
 	private void checkOutBookSub(Scanner sc) {
 
 		System.out.println();
+		System.out.println("=======================================================================================");
 		System.out.println("1.대출 하기   0.나가기");
-		System.out.print("선택> ");
+		System.out.println("=======================================================================================");
+		System.out.print("선택 > ");
 
 		int input = sc.nextInt();
 		sc.nextLine();
@@ -409,8 +451,12 @@ public class LibraryService {
 	private void searchForBooksSub(Scanner sc) {
 		while (true) {
 			System.out.println();
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.전체 도서 목록   2.등록번호   3.제목 검색   4.저자 검색   5.출판사 검색   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 
 			int selectNo = sc.nextInt();
 			sc.nextLine();
@@ -447,7 +493,8 @@ public class LibraryService {
 	private void searchForBooks(String key, Scanner sc) {
 		System.out.println();
 		System.out.println("검색할 도서를 입력해주세요.");
-		System.out.printf("%s 입력> ", key);
+		System.out.println();
+		System.out.printf("%s 입력 > ", key);
 
 		String value = sc.nextLine();
 		// 검색 진행
@@ -465,15 +512,17 @@ public class LibraryService {
 
 			try {
 				System.out.println("삭제할 도서를 선택해주세요.");
-				System.out.print("등록번호 입력> ");
+				System.out.println();
+				System.out.print("등록번호 입력 > ");
 				String bookNo = sc.nextLine();
 				this.isExistBook(bookNo);
 				System.out.print("정말로 삭제하시겠습니까?(Y/N)");
-				String input = sc.next();
+				String input = sc.nextLine();
 				if (input.equals("Y")) {
 					System.out.println(this.dao.deleteBook(bookNo));
 					break;
 				} else if (input.equals("N")) {
+					System.out.println("도서 삭제를 취소합니다.");
 					break;
 				}
 			} catch (Exception e) {
@@ -488,15 +537,22 @@ public class LibraryService {
 		// while문 돌릴떄 쓰는 변수
 		boolean run = true;
 		while (run) {
-	
+
 			System.out.println();
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.도서 상세 보기   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 			int selectNo = sc.nextInt();
 			sc.nextLine();
 			switch (selectNo) {
-			case 1:this.viewBookInDetailSub(sc);break;
-			case 0:run = false;
+			case 1:
+				this.viewBookInDetailSub(sc);
+				break;
+			case 0:
+				run = false;
 			}
 		}
 	}
@@ -505,6 +561,7 @@ public class LibraryService {
 	private void viewBookInDetailSub(Scanner sc) {
 		System.out.println();
 		System.out.println("상세보기 할 도서를 선택해주세요.");
+		System.out.println();
 		System.out.print("등록번호 입력> ");
 
 		String bookNo = sc.nextLine();
@@ -516,8 +573,10 @@ public class LibraryService {
 	private void viewCheckedOutBooks(Scanner sc) {
 		System.out.println(this.dao.viewUserCheckedOutBooks());
 		System.out.println();
+		System.out.println("=======================================================================================");
 		System.out.println("1.반납하기   0.나가기");
-		System.out.print("선택> ");
+		System.out.println("=======================================================================================");
+		System.out.print("선택 > ");
 
 		int input = sc.nextInt();
 		sc.nextLine();
@@ -535,6 +594,7 @@ public class LibraryService {
 	private void returnBook(Scanner sc) {
 		System.out.println();
 		System.out.println("반납할 도서를 선택해주세요.");
+		System.out.println();
 		System.out.print("등록번호 입력> ");
 		String bookNo = sc.nextLine();
 		System.out.println(this.dao.returnBook(bookNo));
@@ -548,8 +608,12 @@ public class LibraryService {
 			System.out.println("삭제할 메시지가 없습니다.");
 		} else {
 			System.out.println();
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.메세지 한개 삭제   2.메세지 전체 삭제   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 			int input = sc.nextInt();
 			sc.nextLine();
 			switch (input) {
@@ -569,13 +633,14 @@ public class LibraryService {
 		}
 	}
 
-	// 사용자 전체 메세지를 삭제
+	// 사용자 메세지를 한개 삭제
 	private void viewDeleteOneMessage(Scanner sc) {
 
 		while (true) {
 
 			System.out.println();
 			System.out.println("삭제할 메세지 번호를 입력해주세요.");
+			System.out.println();
 			System.out.print("번호입력> ");
 			int input = sc.nextInt();
 			sc.nextLine();
@@ -595,42 +660,47 @@ public class LibraryService {
 		boolean run = true;
 		while (run) {
 			System.out.println();
-			System.out.println("<회원검색> ");
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.회원번호 검색   2.이름 검색   3.아이디 검색   4.전화번호 검색   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 
 			int selectNum = sc.nextInt();
 			sc.nextLine();
 
-			System.out.println();
-			System.out.println("검색 할 회원을 입력해주세요.");
-			String key = null;
-			switch (selectNum) {
-			case 0:
+			if (selectNum == 0) {
 				run = false;
-				break;
+			}
+
+			String key = null;
+
+			switch (selectNum) {
 			case 1:
+				System.out.println();
+				System.out.println("검색 할 회원을 입력해주세요.");
+				System.out.println();
+
 				System.out.print("회원번호> ");
-				key = sc.next();
+				key = sc.nextLine();
 				System.out.println(this.dao.serachForUsers("회원번호", key));
 				break;
 			case 2:
 				System.out.print("이름> ");
-				key = sc.next();
+				key = sc.nextLine();
 				System.out.println(this.dao.serachForUsers("이름", key));
 				break;
 			case 3:
 				System.out.print("아이디> ");
-				key = sc.next();
+				key = sc.nextLine();
 				System.out.println(this.dao.serachForUsers("아이디", key));
 				break;
 			case 4:
 				System.out.print("전화번호> ");
-				key = sc.next();
+				key = sc.nextLine();
 				System.out.println(this.dao.serachForUsers("전화번호", key));
 				break;
-			default:
-				System.out.println("알 수 없는 입력입니다. 다시 입력해주세요.");
 			}
 		}
 	}
@@ -640,14 +710,22 @@ public class LibraryService {
 		boolean run = true;
 		while (run) {
 			System.out.println();
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.회원 상세 보기   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 			int selectNo = sc.nextInt();
 			sc.nextLine();
 			switch (selectNo) {
 			// 상세보기 호출
-			case 1:this.viewUserInDetailSub(sc);break;
-			case 0:run = false;break;
+			case 1:
+				this.viewUserInDetailSub(sc);
+				break;
+			case 0:
+				run = false;
+				break;
 			}
 		}
 	}
@@ -655,8 +733,9 @@ public class LibraryService {
 	// 회원 상세보기 서브 메뉴
 	private void viewUserInDetailSub(Scanner sc) {
 		System.out.println();
-		System.out.println("상세보기 할 회원 번호를 입력해 주세요");
-		System.out.print("회원 번호 입력>");
+		System.out.println("상세보기 할 회원 번호를 입력해 주세요.");
+		System.out.println();
+		System.out.print("회원 번호 입력 > ");
 		String userNo = sc.nextLine();
 		System.out.println(this.dao.viewUserInDetail(userNo));
 	}
@@ -677,8 +756,12 @@ public class LibraryService {
 		boolean run = true;
 
 		while (run) {
+			System.out
+					.println("=======================================================================================");
 			System.out.println("1.반납 예정일 수정   0.나가기");
-			System.out.print("선택> ");
+			System.out
+					.println("=======================================================================================");
+			System.out.print("선택 > ");
 
 			int selectNo = sc.nextInt();
 			sc.nextLine();
@@ -690,6 +773,7 @@ public class LibraryService {
 			// 수정할 책 번호 및 수정할 날짜 매개변수
 			System.out.println();
 			System.out.println("반납예정일을 수정할 도서를 선택해주세요.");
+			System.out.println();
 			System.out.print("등록번호> ");
 			String bookNo = sc.nextLine();
 			System.out.print("반납예정일 입력(YYYY-MM-DD)> ");
@@ -704,7 +788,7 @@ public class LibraryService {
 		}
 	}
 
-	//날짜 형식 예외 처리
+	// 날짜 형식 예외 처리
 	private boolean dueDateExceptionCheck(String dueDate) {
 		boolean isOK = false;
 		try {
