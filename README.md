@@ -61,14 +61,14 @@
   ~~~java
   // 오늘 날짜 구하는 메소드
   public String getToday() {
-  		String today = this.now.format(DateTimeFormatter.ISO_LOCAL_DATE).toString();
-  		return today;
+  	String today = this.now.format(DateTimeFormatter.ISO_LOCAL_DATE).toString();
+  	return today;
   	}
 
   // 오늘 날짜로부터 +7일을 구하느 메소드
   public String getDueday() {
-  		String dueday = this.now.plusDays(7).format(DateTimeFormatter.ISO_LOCAL_DATE).toString();
-  		return dueday;
+  	String dueday = this.now.plusDays(7).format(DateTimeFormatter.ISO_LOCAL_DATE).toString();
+  	return dueday;
   	}
   ~~~
 
@@ -77,20 +77,20 @@
   ~~~java
   // checkOutBook 사용자가 도서를 대출 한다.
   public String checkOutBook(String bookNo) {
-  		StringBuilder sb = new StringBuilder();
-  		// 매개변수로 받은 대출할 도서의 번호, 현재 로그인한 사용자번호, 오늘 날짜로 체크아웃 객체를 만든다.
-  		CheckOut checkOut = new CheckOut(bookNo, utils.getCurrentUser().getUserNo(), this.getToday());
-  		// 해당 체크아웃 객체의 반납예정일을 7일 이후로 설정한다.
-  		checkOut.setDueDate(this.getDueday());
-  		// 체크아웃 객체를 checkOuts 리스트에 추가한다.
-  		this.checkOuts.add(checkOut);
-  		// 매개변수로 받은 대출할 도서의 도서 번호로 해당 도서를 book 변수에 담은 다음
+       StringBuilder sb = new StringBuilder();
+      // 매개변수로 받은 대출할 도서의 번호, 현재 로그인한 사용자번호, 오늘 날짜로 체크아웃 객체를 만든다.
+  	CheckOut checkOut = new CheckOut(bookNo, utils.getCurrentUser().getUserNo(), this.getToday());
+  	// 해당 체크아웃 객체의 반납예정일을 7일 이후로 설정한다.
+  	checkOut.setDueDate(this.getDueday());
+  	// 체크아웃 객체를 checkOuts 리스트에 추가한다.
+  	this.checkOuts.add(checkOut);
+  	// 매개변수로 받은 대출할 도서의 도서 번호로 해당 도서를 book 변수에 담은 다음
 
-  		Book book = this.books.get(bookNo);
-  		// status를 (대출중)으로 변경한다.
-  		book.setBookStatus("대출중");
-  		sb.append(String.format("[%s/%s]의 대출이 완료되었습니다.", book.getBookNo(), book.getBookTitle()));
-  		return sb.toString();
+  	Book book = this.books.get(bookNo);
+  	// status를 (대출중)으로 변경한다.
+  	book.setBookStatus("대출중");
+  	sb.append(String.format("[%s/%s]의 대출이 완료되었습니다.", book.getBookNo(), book.getBookTitle()));
+  	return sb.toString();
   }
   ~~~
 
@@ -99,34 +99,33 @@
   ~~~java
   // viewCheckedOutBooks 사용자가 대출중인 도서 목록을 본다.
   public String viewUserCheckedOutBooks() {
-
-  		this.setAllOverdueDays();
-  		StringBuilder sb = new StringBuilder();
-  		sb.append("\n");
-  		sb.append(String.format("[%s/%s]님의 현재 대출 목록 입니다.%n", this.utils.getCurrentUser().getUserNo(),
+       this.setAllOverdueDays();
+  	StringBuilder sb = new StringBuilder();
+  	sb.append("\n");
+  	sb.append(String.format("[%s/%s]님의 현재 대출 목록 입니다.%n", this.utils.getCurrentUser().getUserNo(),
   				this.utils.getCurrentUser().getName()));
   		sb.append(String.format("오늘 날짜 : %s%n", this.getToday()));
 
-  		sb.append("---------------------------------------------------------------------------------------\n");
-  		sb.append(String.format("등록번호/도서명/대출일/반납예정일/대출현황/연체일수%n"));
-  		sb.append("---------------------------------------------------------------------------------------\n");
+  	sb.append("---------------------------------------------------------------------------------------\n");
+  	sb.append(String.format("등록번호/도서명/대출일/반납예정일/대출현황/연체일수%n"));
+  	sb.append("---------------------------------------------------------------------------------------\n");
 
-  		// 체크아웃 리스트가 가진 모든 체크아웃 객체들 중에
-  		for (CheckOut checkOut : this.checkOuts) {
-  			// 현재 회원번호와 체크아웃 객체가 가진 회원번호가 같을 때
-  			if (checkOut.getUserNo().equals(this.utils.getCurrentUser().getUserNo())) {
-  				// 해당 체크아웃 객체가 가진 도서 등록번호만을 가지고 와서 book 변수에 담고
-  				Book book = books.get(checkOut.getBookNo());
-  				// 해당 북이 대출중이거나 연체중이라면
-  				if (book.getBookStatus().equals("대출중") || book.getBookStatus().equals("연체중")) {
-  					// StringBuilder에 내용을 붙여준다.
-  					sb.append(String.format("%s/%s/%s/%s/%s/%d%n", book.getBookNo(), book.getBookTitle(),
+  	// 체크아웃 리스트가 가진 모든 체크아웃 객체들 중에
+  	for (CheckOut checkOut : this.checkOuts) {
+  		// 현재 회원번호와 체크아웃 객체가 가진 회원번호가 같을 때
+  		if (checkOut.getUserNo().equals(this.utils.getCurrentUser().getUserNo())) {
+  			// 해당 체크아웃 객체가 가진 도서 등록번호만을 가지고 와서 book 변수에 담고
+  			Book book = books.get(checkOut.getBookNo());
+  			// 해당 북이 대출중이거나 연체중이라면
+  			if (book.getBookStatus().equals("대출중") || book.getBookStatus().equals("연체중")) {
+  			// StringBuilder에 내용을 붙여준다.
+  			sb.append(String.format("%s/%s/%s/%s/%s/%d%n", book.getBookNo(), book.getBookTitle(),
   							checkOut.getCheckOutDate(), checkOut.getDueDate(), book.getBookStatus(),
   							checkOut.getOverdueDays()));
-  				}
-  			}
+  		    }
+          }
 
-  		}
+      }
   		sb.append("---------------------------------------------------------------------------------------");
   		return sb.toString();
   }
@@ -138,27 +137,27 @@
   // returnBook 사용자가 도서를 반납 한다.
   	// 도서번호를 매개 변수로 받고, 해당하는 책의 bookStatus를 0으로 바꾸고 checkOUt데이터의 반납일을 오늘로 만들어주면 됨.
   public String returnBook(String bookNo) {
-  		StringBuilder sb = new StringBuilder();
-  		// 모든 체크아웃 데이터중에
-  		for (CheckOut checkOut : this.checkOuts) {
-  			// 체크아웃이 가지고 있는 도서 번호가 매개변수로 받은 반납하고 싶은 책 넘버와 같을 때&&
-  			// 체크아웃이 가지고 있는 유저 번호가 현재 사용자의 번호와 같다면
-  			if (checkOut.getBookNo().equals(bookNo)
+  	StringBuilder sb = new StringBuilder();
+  	// 모든 체크아웃 데이터중에
+  	for (CheckOut checkOut : this.checkOuts) {
+  		// 체크아웃이 가지고 있는 도서 번호가 매개변수로 받은 반납하고 싶은 책 넘버와 같을 때&&
+  		// 체크아웃이 가지고 있는 유저 번호가 현재 사용자의 번호와 같다면
+  		if (checkOut.getBookNo().equals(bookNo)
   					&& checkOut.getUserNo().equals(utils.getCurrentUser().getUserNo())) {
-  				// 매개변수로 받은 반납하고 싶은 책을 book 변수에 담고
-  				Book book = books.get(bookNo);
-  				// 그 책의 상태가 0(비치중)이 아니라면
-  				if (!book.getBookStatus().equals("비치중")) {
-  					// 책의 상태를 0(비치중)으로 변경하고
-  					book.setBookStatus("비치중");
-  					// 해당 체크아웃 객체의 반납일을 오늘로 설정하고, 반납 예정일을 ""로 변경
-  					checkOut.setReturnDate(getToday());
-  					checkOut.setDueDate("");
-  					sb.append(String.format("[%s/%s]이 반납되었습니다.", book.getBookNo(), book.getBookTitle()));
+  			// 매개변수로 받은 반납하고 싶은 책을 book 변수에 담고
+  			Book book = books.get(bookNo);
+  			// 그 책의 상태가 0(비치중)이 아니라면
+  			if (!book.getBookStatus().equals("비치중")) {
+  				// 책의 상태를 0(비치중)으로 변경하고
+  				book.setBookStatus("비치중");
+  				// 해당 체크아웃 객체의 반납일을 오늘로 설정하고, 반납 예정일을 ""로 변경
+  				checkOut.setReturnDate(getToday());
+  				checkOut.setDueDate("");
+  				sb.append(String.format("[%s/%s]이 반납되었습니다.", book.getBookNo(), book.getBookTitle()));
   				}
   			}
   		}
-  		return sb.toString();
+  	return sb.toString();
   }
   ~~~
 
@@ -166,36 +165,36 @@
 
   ~~~java
   // viewReturnedBooks 사용자가 반납한 도서 목록을 본다.
-  	public String viewReturnedBooks() {
-  		StringBuilder sb = new StringBuilder();
-  		sb.append("\n");
-  		sb.append(String.format("[%s/%s]님의 반납 목록 입니다.%n", this.utils.getCurrentUser().getUserNo(),
+  public String viewReturnedBooks() {
+  	StringBuilder sb = new StringBuilder();
+  	sb.append("\n");
+  	sb.append(String.format("[%s/%s]님의 반납 목록 입니다.%n", this.utils.getCurrentUser().getUserNo(),
   				this.utils.getCurrentUser().getName()));
-  		sb.append(String.format("오늘 날짜 : %s%n", this.getToday()));
-  		sb.append("---------------------------------------------------------------------------------------\n");
-  		sb.append(String.format("회차/등록번호/도서명/대출일/반납일/연체일수%n"));
-  		sb.append("---------------------------------------------------------------------------------------\n");
-  		// 체크아웃 리스트를 대출일 기준으로 sort(정렬)기 위한 Collections 클래스의 sort메소드 사용
-  		Collections.sort(this.checkOuts);
-  		// 회차 증가를 위한 count변수 선언
-  		int count = 0;
-  		// 체크아웃 리스트에 담긴 모든 체크아웃 객체들 중에
-  		for (CheckOut checkOut : this.checkOuts) {
-  			// 체크아웃 객체가 가진 회원번호와 현재 사용자의 유저번호가 같고, 체크아웃 객체의 반납일이 Null이 아닐때
-  			if ((checkOut.getUserNo().equals(this.utils.getCurrentUser().getUserNo()))
+  	sb.append(String.format("오늘 날짜 : %s%n", this.getToday()));
+  	sb.append("---------------------------------------------------------------------------------------\n");
+  	sb.append(String.format("회차/등록번호/도서명/대출일/반납일/연체일수%n"));
+  	sb.append("---------------------------------------------------------------------------------------\n");
+  	// 체크아웃 리스트를 대출일 기준으로 sort(정렬)기 위한 Collections 클래스의 sort메소드 사용
+  	Collections.sort(this.checkOuts);
+  	// 회차 증가를 위한 count변수 선언
+  	int count = 0;
+  	// 체크아웃 리스트에 담긴 모든 체크아웃 객체들 중에
+  	for (CheckOut checkOut : this.checkOuts) {
+  		// 체크아웃 객체가 가진 회원번호와 현재 사용자의 유저번호가 같고, 체크아웃 객체의 반납일이 Null이 아닐때
+  		if ((checkOut.getUserNo().equals(this.utils.getCurrentUser().getUserNo()))
   					&& (checkOut.getReturnDate() != null)) {
-  				// 조건문을 만족하는 범위에서 count 증가
-  				count++;
-  				// 체크아웃에 객체의 필드인 bookNo를 이용해서 해당 도서를 book 변수에 담고
-  				Book book = books.get(checkOut.getBookNo());
-  				// StringBuilder에 내용을 붙여준다.
-  				sb.append(String.format("%d/%s/%s/%s/%s/%d%n", count, book.getBookNo(), book.getBookTitle(),
+  			// 조건문을 만족하는 범위에서 count 증가
+  			count++;
+  			// 체크아웃에 객체의 필드인 bookNo를 이용해서 해당 도서를 book 변수에 담고
+  			Book book = books.get(checkOut.getBookNo());
+  			// StringBuilder에 내용을 붙여준다.
+  			sb.append(String.format("%d/%s/%s/%s/%s/%d%n", count, book.getBookNo(), book.getBookTitle(),
   						checkOut.getCheckOutDate(), checkOut.getReturnDate(), checkOut.getOverdueDays()));
   			}
   		}
-  		sb.append("---------------------------------------------------------------------------------------\n");
-  		return sb.toString();
-  	}
+  	sb.append("---------------------------------------------------------------------------------------\n");
+  	return sb.toString();
+  }
   ~~~
 
   ​
