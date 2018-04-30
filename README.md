@@ -104,7 +104,7 @@
   	sb.append("\n");
   	sb.append(String.format("[%s/%s]님의 현재 대출 목록 입니다.%n", this.utils.getCurrentUser().getUserNo(),
   				this.utils.getCurrentUser().getName()));
-  		sb.append(String.format("오늘 날짜 : %s%n", this.getToday()));
+  	sb.append(String.format("오늘 날짜 : %s%n", this.getToday()));
 
   	sb.append("---------------------------------------------------------------------------------------\n");
   	sb.append(String.format("등록번호/도서명/대출일/반납예정일/대출현황/연체일수%n"));
@@ -119,9 +119,7 @@
   			// 해당 북이 대출중이거나 연체중이라면
   			if (book.getBookStatus().equals("대출중") || book.getBookStatus().equals("연체중")) {
   			// StringBuilder에 내용을 붙여준다.
-  			sb.append(String.format("%s/%s/%s/%s/%s/%d%n", book.getBookNo(), book.getBookTitle(),
-  							checkOut.getCheckOutDate(), checkOut.getDueDate(), book.getBookStatus(),
-  							checkOut.getOverdueDays()));
+  			sb.append(String.format("%s/%s/%s/%s/%s/%d%n", book.getBookNo(), book.getBookTitle(),checkOut.getCheckOutDate(), checkOut.getDueDate(), book.getBookStatus(),checkOut.getOverdueDays()));
   		    }
           }
 
