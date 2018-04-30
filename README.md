@@ -1,4 +1,4 @@
-Java&Python 기반 응용SW개발자 양성과정
+쌍용 교육센터 Java&Python 기반 응용SW개발자 양성과정 (기간 : 2017년 11년 1일 ~ 2018년 6월 1일)
 
 # 도서 대출 관리 프로그램
 
@@ -7,6 +7,7 @@ Java&Python 기반 응용SW개발자 양성과정
 * 주제 : 도서 대출 관리
 * 기술 : JavaSE , OOP, Collection, Generic, File IO, Serialization
 * 진행절차 : 요구분석 → 화면 설계 → 자료구조 설계 → 액션 설계 → 액션 구현 → 테스트 → 최종실행
+* 프로젝트의 디테일한 진행 과정은 [여기](https://youmekko.github.io/categories/TeamProject/) 
 
 
 ### 프로젝트 개요
